@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+
+# Local environment
+.env
+.env.local
+
+# The personal playbook (everyone should fork their own)
+playbook.md
+
+# Runtime artifacts
+*.log
+/tmp/
