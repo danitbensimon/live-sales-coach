@@ -87,11 +87,19 @@ cp playbook.example.md playbook.md
 
 ## Run
 
+**Easiest — double-click the launcher:**
+
+In Finder, double-click `Sales Coach.command`. macOS opens Terminal, loads your `.env`, and launches the overlay. Quit the overlay window to stop.
+
+> First time only: macOS may say "cannot be opened because it's from an unidentified developer." Right-click the file → **Open** → confirm. After that it'll launch with a regular double-click.
+
+**Or from the terminal:**
+
 ```bash
 python3 coach.py
 ```
 
-The overlay window appears in the bottom-right of your screen.
+Either way, the overlay window appears in the bottom-right of your screen.
 
 **Per-call workflow:**
 1. Type the prospect's email in the **Contact email** field (optional but recommended — needed for HubSpot note)
