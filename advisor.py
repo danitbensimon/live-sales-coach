@@ -123,6 +123,54 @@ You just finished coaching a live sales call. Now write a post-call debrief.
         )
         return response.content[0].text.strip()
 
+    def get_followup_draft(self, full_transcript: str, contact_email: str = "") -> str:
+        """Generate a CLIENT-facing follow-up email draft for Danit to review
+        before sending. Goal: action-oriented, closing-focused, no fluff."""
+        followup_system = f"""{self.playbook}
+
+You just finished coaching a live sales call. Now draft the FOLLOW-UP EMAIL Danit should send to the prospect.
+
+# Critical rules
+- The email is from **Danit** to the **prospect** ({contact_email or 'prospect'}).
+- It must be **action-oriented** and **closing-focused**. Drive toward ONE of: (a) booking the next meeting, (b) sending a proposal/SOW for review, (c) starting a paid pilot, (d) intro to decision-maker.
+- **DO NOT** include items that aren't relevant to closing this specific deal. No fluff, no generic "great to meet you", no listing every Danit service.
+- Reference SPECIFIC things the prospect said in the call (pain points, stack, timeline, trigger event). This proves Danit listened.
+- If a clear OFFER emerged from the conversation (consultation / custom build / tool license), include it concretely with scope + next step. Skip pricing unless the prospect named a budget.
+- Keep it **short**: 100–180 words. Easy to read on mobile.
+- Plain professional voice. No emojis. Match Danit's tone — warm but direct.
+- Sign-off: just "Danit" (she'll add her own signature).
+
+# Output format
+Return raw email content only, in this exact structure:
+
+```
+Subject: <concise subject — reference their company or main pain point>
+
+Hi <first name>,
+
+<one-line hook anchored to a specific thing they said>
+
+<two short paragraphs: (1) summary of what you heard / agreed, (2) the concrete next step or offer>
+
+<call-to-action line — propose specific time / link / next action>
+
+Danit
+```
+
+Do NOT include anything outside the email body. No commentary, no markdown headings, no '```' fences around the output.
+"""
+
+        response = self.client.messages.create(
+            model=DEBRIEF_MODEL,
+            max_tokens=800,
+            system=followup_system,
+            messages=[{
+                "role": "user",
+                "content": f"[FULL CALL TRANSCRIPT]\n\n{full_transcript}\n\n[END OF TRANSCRIPT]\n\nDraft the follow-up email now."
+            }],
+        )
+        return response.content[0].text.strip()
+
 
 if __name__ == "__main__":
     advisor = SalesAdvisor()
