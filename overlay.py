@@ -38,11 +38,19 @@ class CoachOverlay:
     def _toggle(self, _event=None):
         if self._active:
             self._active = False
+            # Clear stale tips from the previous call so the post-call
+            # notifications appear on a clean slate.
+            self.tips.clear()
+            self._redraw_tips()
             self._update_button()
             if self.on_stop:
                 self.on_stop()
         else:
             self._active = True
+            # Also clear when starting a new call — guarantees fresh state
+            # even if Stop wasn't clicked between sessions.
+            self.tips.clear()
+            self._redraw_tips()
             self._update_button()
             if self.on_start:
                 email = self.contact_email_var.get().strip() if self.contact_email_var else ""

@@ -8,7 +8,19 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# Load secrets from .env if present (KEY=VALUE per line, no quotes needed)
+# macOS launches .command files in a non-interactive shell that does NOT
+# source ~/.zshrc by default. Pull `export FOO=...` lines from ~/.zshrc
+# (and ~/.zshenv / ~/.zprofile) so the API keys you set there are available.
+for rc in "$HOME/.zshenv" "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.bash_profile" "$HOME/.profile"; do
+    if [ -f "$rc" ]; then
+        set -a
+        # shellcheck disable=SC1090
+        eval "$(grep -E '^[[:space:]]*export [A-Za-z_][A-Za-z0-9_]*=' "$rc" || true)"
+        set +a
+    fi
+done
+
+# Also honor a local .env if present (overrides shell rc files on conflict)
 if [ -f ".env" ]; then
     set -a
     # shellcheck disable=SC1091
